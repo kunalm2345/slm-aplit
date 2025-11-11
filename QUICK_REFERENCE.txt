@@ -1,0 +1,195 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    CPU INFERENCE ENGINE - QUICK REFERENCE                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌─ INSTALLATION ────────────────────────────────────────────────────────────────┐
+│ pip install torch transformers numpy psutil einops                           │
+│ # or: pip install -r requirements_inference.txt                              │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+┌─ QUICK START ─────────────────────────────────────────────────────────────────┐
+│ # Default example                                                             │
+│ python3 cpu_inference.py                                                      │
+│                                                                               │
+│ # Custom prompt                                                               │
+│ python3 cpu_inference.py --prompt "Your prompt here" --max-tokens 100        │
+│                                                                               │
+│ # Interactive chat                                                            │
+│ python3 cpu_inference.py --interactive                                        │
+│                                                                               │
+│ # Run benchmarks                                                              │
+│ python3 cpu_inference.py --benchmark                                          │
+│                                                                               │
+│ # Run tests                                                                   │
+│ python3 test_inference.py                                                     │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+┌─ PYTHON API ──────────────────────────────────────────────────────────────────┐
+│ from cpu_inference import CPUInferenceEngine                                  │
+│ import torch                                                                  │
+│                                                                               │
+│ # Initialize                                                                  │
+│ engine = CPUInferenceEngine(                                                  │
+│     model_path=".",                                                           │
+│     device="cpu",                                                             │
+│     dtype=torch.float32                                                       │
+│ )                                                                             │
+│                                                                               │
+│ # Generate                                                                    │
+│ text, metrics = engine.generate(                                              │
+│     prompt="What is AI?",                                                     │
+│     max_new_tokens=100,                                                       │
+│     temperature=0.7,                                                          │
+│     benchmark=True                                                            │
+│ )                                                                             │
+│                                                                               │
+│ # Print results                                                               │
+│ print(text)                                                                   │
+│ metrics.print_summary()                                                       │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+┌─ CLI OPTIONS ─────────────────────────────────────────────────────────────────┐
+│ --model-path PATH       Model directory (default: current directory)         │
+│ --prompt TEXT           Your prompt text                                      │
+│ --max-tokens N          Max tokens to generate (default: 100)                │
+│ --temperature FLOAT     Sampling temperature 0.0-2.0 (default: 0.7)          │
+│ --dtype TYPE            float32/float16/bfloat16 (default: float32)          │
+│ --benchmark             Run full benchmark suite                             │
+│ --benchmark-output FILE Save benchmark results (default: benchmark_results)  │
+│ --interactive           Interactive chat mode                                │
+│ --help                  Show all options                                     │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+┌─ GENERATION MODES ────────────────────────────────────────────────────────────┐
+│ 1. SINGLE GENERATION                                                          │
+│    text, metrics = engine.generate("prompt", max_new_tokens=100)             │
+│                                                                               │
+│ 2. STREAMING (token-by-token)                                                 │
+│    for token in engine.generate_streaming("prompt", max_new_tokens=100):     │
+│        print(token, end='', flush=True)                                       │
+│                                                                               │
+│ 3. CHAT INTERFACE                                                             │
+│    messages = [{"role": "user", "content": "Hello!"}]                         │
+│    response, metrics = engine.chat(messages, max_new_tokens=100)             │
+│                                                                               │
+│ 4. BENCHMARK SUITE                                                            │
+│    results = engine.run_benchmark_suite(                                      │
+│        prompts=["Q1", "Q2", "Q3"],                                            │
+│        max_new_tokens=100,                                                    │
+│        num_runs=5                                                             │
+│    )                                                                          │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+┌─ BENCHMARK METRICS ───────────────────────────────────────────────────────────┐
+│ ⏱️  TIMING                                                                     │
+│   • Total time       - End-to-end generation time                            │
+│   • Prefill time     - Time to process input prompt                          │
+│   • Decode time      - Time for autoregressive generation                    │
+│                                                                               │
+│ 🚀 THROUGHPUT                                                                  │
+│   • Overall tokens/s - Total generation speed                                │
+│   • Prefill tokens/s - Input processing speed                                │
+│   • Decode tokens/s  - Token generation speed                                │
+│                                                                               │
+│ 💾 MEMORY                                                                      │
+│   • Peak memory MB   - Maximum memory usage                                  │
+│                                                                               │
+│ 📊 TOKENS                                                                      │
+│   • Prompt tokens    - Input length                                          │
+│   • Generated tokens - Output length                                         │
+│   • Total tokens     - Sum of input + output                                 │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+┌─ MODEL INFO ──────────────────────────────────────────────────────────────────┐
+│ Model: Phi-tiny-MoE-instruct                                                  │
+│ Type:  Sparse Mixture-of-Experts                                              │
+│                                                                               │
+│ • 16 experts total                                                            │
+│ • 2 active experts per token (top-2 routing)                                 │
+│ • 32 layers                                                                   │
+│ • 4096 hidden size                                                            │
+│ • 448 intermediate size per expert                                           │
+│ • 16 attention heads (4 KV heads)                                            │
+│ • 32,064 vocabulary size                                                      │
+│ • 4,096 max context length                                                    │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+┌─ PERFORMANCE TIPS ────────────────────────────────────────────────────────────┐
+│ 🔧 SPEED                                                                       │
+│   • Use greedy decoding:       do_sample=False                               │
+│   • Reduce tokens:             max_new_tokens=50                             │
+│   • Lower precision:           dtype=torch.float16                           │
+│   • Enable KV cache:           use_cache=True (default)                      │
+│                                                                               │
+│ 💾 MEMORY                                                                      │
+│   • Use lower precision:       dtype=torch.float16 or bfloat16               │
+│   • Reduce batch size:         Process one at a time                         │
+│   • Shorter sequences:         max_new_tokens=<smaller>                      │
+│                                                                               │
+│ 🎲 CREATIVITY                                                                  │
+│   • Higher temperature:        temperature=0.9 (more random)                 │
+│   • Lower temperature:         temperature=0.1 (more deterministic)          │
+│   • Nucleus sampling:          top_p=0.9                                     │
+│   • Top-k sampling:            top_k=50                                      │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+┌─ COMMON WORKFLOWS ────────────────────────────────────────────────────────────┐
+│ 1. QUICK TEST                                                                 │
+│    python3 cpu_inference.py --prompt "Hello" --max-tokens 20                 │
+│                                                                               │
+│ 2. BENCHMARK PERFORMANCE                                                      │
+│    python3 cpu_inference.py --benchmark --benchmark-output results.json      │
+│                                                                               │
+│ 3. EXPERIMENT WITH PARAMETERS                                                 │
+│    python3 cpu_inference.py --prompt "..." \                                 │
+│        --temperature 0.9 --max-tokens 200 --dtype float16                    │
+│                                                                               │
+│ 4. VALIDATE INSTALLATION                                                      │
+│    python3 test_inference.py                                                  │
+│                                                                               │
+│ 5. INTERACTIVE EXPLORATION                                                    │
+│    python3 cpu_inference.py --interactive                                     │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+┌─ FILES CREATED ───────────────────────────────────────────────────────────────┐
+│ cpu_inference.py           - Main inference engine (~600 lines)              │
+│ test_inference.py          - Automated test suite                            │
+│ requirements_inference.txt - Python dependencies                             │
+│ INFERENCE_README.md        - Full documentation                              │
+│ IMPLEMENTATION_SUMMARY.md  - Implementation details & next steps             │
+│ QUICK_REFERENCE.txt        - This file!                                      │
+│ run_inference.sh           - Interactive quick-start script                  │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+┌─ NEXT STEPS ──────────────────────────────────────────────────────────────────┐
+│ Ready to extend for GPU/CPU splitting? Consider:                             │
+│                                                                               │
+│ 1. Profile expert usage to identify hot/cold experts                         │
+│ 2. Implement GPU inference engine variant                                    │
+│ 3. Create hybrid split engine (CPU/GPU)                                      │
+│ 4. Add expert tracking and visualization                                     │
+│ 5. Optimize routing and data movement                                        │
+│                                                                               │
+│ See IMPLEMENTATION_SUMMARY.md for detailed roadmap                            │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+┌─ TROUBLESHOOTING ─────────────────────────────────────────────────────────────┐
+│ Problem: Import errors                                                        │
+│ Solution: pip install -r requirements_inference.txt                           │
+│                                                                               │
+│ Problem: Out of memory                                                        │
+│ Solution: Use --dtype float16 or reduce --max-tokens                          │
+│                                                                               │
+│ Problem: Slow generation                                                      │
+│ Solution: Use greedy decoding (lower temperature) or reduce tokens           │
+│                                                                               │
+│ Problem: Model not found                                                      │
+│ Solution: Ensure you're in the model directory or use --model-path           │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+┌─ SUPPORT ─────────────────────────────────────────────────────────────────────┐
+│ Documentation: See INFERENCE_README.md                                        │
+│ Examples:      See test_inference.py                                          │
+│ Details:       See IMPLEMENTATION_SUMMARY.md                                  │
+│ Model Info:    See config.json, modeling_slimmoe.py                           │
+└───────────────────────────────────────────────────────────────────────────────┘

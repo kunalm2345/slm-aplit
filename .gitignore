@@ -1,0 +1,19 @@
+# Exclude safetensor model files
+model-00001-of-00002.safetensors
+model-00002-of-00002.safetensors
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environment
+base/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

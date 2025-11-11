@@ -1,0 +1,10 @@
+# Requirements for CPU Inference Engine
+# Install with: python3 -m pip install -r requirements_inference.txt
+torch
+transformers
+numpy
+psutil
+einops
+
+# Optional: for better performance
+# accelerate
