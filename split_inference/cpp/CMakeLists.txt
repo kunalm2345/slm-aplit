@@ -44,8 +44,15 @@ if(ENABLE_SYCL)
         set(ONEAPI_ROOT $ENV{ONEAPI_ROOT})
         message(STATUS "oneAPI root: ${ONEAPI_ROOT}")
         
-        # Add SYCL compiler flags
-        set(CMAKE_CXX_COMPILER ${ONEAPI_ROOT}/compiler/latest/linux/bin/icpx)
+        # Find icpx compiler (handle broken symlinks)
+        if(EXISTS "${ONEAPI_ROOT}/compiler/2025.2/bin/icpx")
+            set(CMAKE_CXX_COMPILER ${ONEAPI_ROOT}/compiler/2025.2/bin/icpx)
+        elseif(EXISTS "${ONEAPI_ROOT}/compiler/latest/bin/icpx")
+            set(CMAKE_CXX_COMPILER ${ONEAPI_ROOT}/compiler/latest/bin/icpx)
+        else()
+            message(FATAL_ERROR "Could not find icpx compiler in ${ONEAPI_ROOT}/compiler/")
+        endif()
+        
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsycl")
         
         add_definitions(-DENABLE_SYCL)

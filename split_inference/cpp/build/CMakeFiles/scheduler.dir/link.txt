@@ -1,0 +1,1 @@
+/opt/intel/oneapi/compiler/2025.2/bin/icpx  -fsycl -O3 -DNDEBUG CMakeFiles/scheduler.dir/scheduler.cpp.o -o scheduler  -lzmq -lpthread

@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/home/subroto/Studies/Sem_4-1/SysML/MoE_Split/next attempt/slm-aplit/split_inference/cpp/build",
+  "command": "/opt/intel/oneapi/compiler/2025.2/bin/icpx -DENABLE_SYCL -I\"/home/subroto/Studies/Sem_4-1/SysML/MoE_Split/next attempt/slm-aplit/split_inference/cpp/build/_deps/json-src/include\"  -fsycl -O3 -DNDEBUG -std=gnu++17 -Wall -Wextra -Wpedantic -o CMakeFiles/scheduler.dir/scheduler.cpp.o -c \"/home/subroto/Studies/Sem_4-1/SysML/MoE_Split/next attempt/slm-aplit/split_inference/cpp/scheduler.cpp\"",
+  "file": "/home/subroto/Studies/Sem_4-1/SysML/MoE_Split/next attempt/slm-aplit/split_inference/cpp/scheduler.cpp",
+  "output": "CMakeFiles/scheduler.dir/scheduler.cpp.o"
+}
+]
